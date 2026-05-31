@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Loot- Premium Auth</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #ff416c;
+            --gold: #ffcc00;
+            --bg-dark: #070715;
+            --panel: #12122b;
+        }
+
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; margin: 0; display: flex; justify-content: center; }
+        .app-shell { width: 100%; max-width: 420px; min-height: 100vh; position: relative; }
+
+        /* Professional Bonus Header */
+        .bonus-banner {
+            background: linear-gradient(180deg, var(--accent) 0%, var(--bg-dark) 100%);
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .gift-box { font-size: 55px; color: var(--gold); animation: pulse 2s infinite; }
+        .bonus-text { font-size: 45px; font-weight: 900; background: linear-gradient(#fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
+
+        /* Modern Tabs */
+        .tab-box {
+            display: flex; margin: -25px 40px 20px; background: var(--panel); 
+            border-radius: 15px; padding: 5px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px; text-align: center; cursor: pointer; 
+            border-radius: 12px; font-weight: bold; transition: 0.4s; color: #888;
+        }
+        .tab-btn.active { background: white; color: var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+        /* Input Styling */
+        .form-wrap { padding: 0 30px; }
+        .input-group {
+            background: var(--panel); border-radius: 15px; padding: 16px;
+            display: flex; align-items: center; margin-bottom: 15px; border: 1px solid #2a2a4d;
+            transition: 0.3s;
+        }
+        .input-group input { background: transparent; border: none; color: white; width: 100%; outline: none; margin-left: 12px; font-size: 16px; }
+        
+        .main-btn {
+            width: 100%; padding: 18px; border: none; border-radius: 50px;
+            background: linear-gradient(90deg, var(--gold), #ff8a00);
+            color: #000; font-size: 18px; font-weight: 800; cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 204, 0, 0.4); margin-top: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .main-btn:active { transform: scale(0.96); }
+        .shake-err { border-color: #ff3131 !important; animation: shakeX 0.5s; }
+        .hidden { display: none; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <div class="header-content bonus-banner">
+        <div class="gift-box"><i class="fas fa-wallet"></i></div>
+        <div class="bonus-text">₹128 - ₹478</div>
+        <p style="font-size: 13px; letter-spacing: 1px; color: #aaa;">EXCLUSIVE NEW USER REWARD</p>
+    </div>
+
+    <div class="tab-box">
+        <div class="tab-btn active" id="l-tab" onclick="toggle('L')">LOGIN</div>
+        <div class="tab-btn" id="r-tab" onclick="toggle('R')">REGISTER</div>
+    </div>
+
+    <div class="form-wrap">
+        <div class="input-group" id="p-box">
+            <i class="fas fa-phone-alt" style="color: var(--gold);"></i>
+            <input type="text" id="phone" placeholder="Mobile Number">
+        </div>
+        <div class="input-group" id="w-box">
+            <i class="fas fa-shield-alt" style="color: var(--gold);"></i>
+            <input type="password" id="pass" placeholder="Password">
+        </div>
+        
+        <div class="input-group hidden" id="invite-box">
+            <i class="fas fa-id-card" style="color: var(--gold);"></i>
+            <input type="text" id="invite" placeholder="Invite Code (Optional)">
+        </div>
+
+        <button class="main-btn" id="action-btn" onclick="process()">
+            CONTINUE
+        </button>
+
+        <p style="text-align: center; color: #444; font-size: 11px; margin-top: 30px;">
+            By continuing, you agree to our Terms & Privacy Policy
+        </p>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'L';
+
+    function toggle(mode) {
+        currentMode = mode;
+        const lTab = document.getElementById('l-tab');
+        const rTab = document.getElementById('r-tab');
+        const invite = document.getElementById('invite-box');
+        const btn = document.getElementById('action-btn');
+
+        if(mode === 'L') {
+            lTab.classList.add('active');
+            rTab.classList.remove('active');
+            invite.classList.add('hidden');
+            btn.innerText = 'LOGIN';
+        } else {
+            rTab.classList.add('active');
+            lTab.classList.remove('active');
+            invite.classList.remove('hidden');
+            btn.innerText = 'CREATE ACCOUNT';
+        }
+    }
+
+    function process() {
+        const phone = document.getElementById('phone');
+        const pass = document.getElementById('pass');
+        const pBox = document.getElementById('p-box');
+        const wBox = document.getElementById('w-box');
+
+        pBox.classList.remove('shake-err');
+        wBox.classList.remove('shake-err');
+
+        // Professional English Validations
+        if(phone.value.trim() === "" || pass.value.trim() === "") {
+            if(phone.value.trim() === "") pBox.classList.add('shake-err');
+            if(pass.value.trim() === "") wBox.classList.add('shake-err');
+
+            Swal.fire({
+                title: 'Required Fields',
+                text: 'Please enter your mobile number and password to continue.',
+                icon: 'error',
+                confirmButtonColor: '#ff416c',
+                background: '#12122b',
+                color: '#fff'
+            });
+            return;
+        }
+
+        if(phone.value.length < 10) {
+            pBox.classList.add('shake-err');
+            Swal.fire({
+                title: 'Invalid Number',
+                text: 'Please enter a valid 10-digit mobile number.',
+                icon: 'warning',
+                confirmButtonColor: '#ff416c',
+                background: '#12122b',
+                color: '#fff'
+            });
+            return;
+        }
+
+        // Logic
+        if(currentMode === 'R') sessionStorage.setItem('claim_bonus', 'true');
+        window.location.href = 'dashboard.html';
+    }
+</script>
+
+</body>
+</html>
