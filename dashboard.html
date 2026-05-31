@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>77 CLUB - Professional Earning App</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        :root { --primary: #4e73df; --success: #1cc88a; --warning: #f6c23e; --bg: #f4f6f9; --dark-text: #2e3750; }
+        
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--dark-text); margin: 0; padding-bottom: 90px; overflow-x: hidden; }
+
+        /* Top App Header */
+        .app-header { 
+            background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;
+        }
+        .app-header .logo { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+        .app-header .uid-box { font-size: 11px; font-weight: 700; color: #888; background: #eee; padding: 5px 12px; border-radius: 50px; }
+
+        /* Wallet Banner */
+        .balance-banner { 
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); 
+            margin: 15px; padding: 25px; border-radius: 25px; color: white;
+            position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(78,115,223,0.3);
+        }
+        .bal-label { font-size: 12px; opacity: 0.8; font-weight: 600; text-transform: uppercase; }
+        .bal-value { font-size: 42px; font-weight: 800; margin: 5px 0; }
+        
+        .withdraw-pill { 
+            background: var(--success); color: white; border: none; padding: 12px 25px; 
+            border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; width: 100%;
+        }
+
+        /* Stats Row */
+        .stats-row { display: flex; gap: 10px; padding: 0 15px; margin-bottom: 20px; }
+        .stat-card { background: white; flex: 1; padding: 12px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .stat-card div:first-child { font-size: 10px; color: #aaa; font-weight: 700; }
+        .stat-card div:last-child { font-size: 16px; font-weight: 800; color: var(--primary); }
+
+        /* Task Section */
+        .task-section { padding: 0 15px; }
+        .section-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; }
+        .task-card { 
+            background: white; padding: 15px; border-radius: 20px; margin-bottom: 12px;
+            display: flex; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-left: 4px solid var(--primary);
+        }
+        .task-icon { width: 45px; height: 45px; background: #f0f4ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--primary); }
+        .task-info { flex: 1; margin-left: 12px; }
+        .task-info h4 { margin: 0; font-size: 13px; font-weight: 700; }
+        .reward-amt { display: block; font-size: 14px; font-weight: 800; color: var(--success); }
+        .get-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; }
+        .get-btn.done { background: #d1d8e0; color: #7f8c8d; }
+
+        /* Bottom Menu */
+        .bottom-menu { 
+            position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; 
+            display: flex; justify-content: space-around; padding: 12px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0;
+        }
+        .menu-item { text-align: center; color: #bfc5d2; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .menu-item.active { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="logo">77 CLUB</div>
+        <div class="uid-box">UID: <span id="top-uid">...</span></div>
+    </div>
+
+    <div id="home-page">
+        <div class="balance-banner">
+            <div class="bal-label">My Wallet Balance</div>
+            <div class="bal-value">₹ <span class="live-balance">0.00</span></div>
+            <button class="withdraw-pill" onclick="handleWithdrawal()">WITHDRAW CASH</button>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div>TODAY EARN</div>
+                <div>₹<span id="today-earn">0.00</span></div>
+            </div>
+            <div class="stat-card" onclick="claimDailyReward()" style="cursor:pointer; background: #fff8e1; border: 1px solid #ffe082;">
+                <div style="color: #f57c00;">DAILY REWARD</div>
+                <div style="font-size: 14px;"><i class="fas fa-gift"></i> CLAIM</div>
+            </div>
+            <div class="stat-card">
+                <div>TASKS</div>
+                <div><span id="task-count">0</span>/8</div>
+            </div>
+        </div>
+
+        <div class="task-section">
+            <div class="section-title">High-Paying Tasks</div>
+            <div id="task-list-container"></div>
+        </div>
+    </div>
+
+    <div id="account-page" style="display:none; padding: 20px;">
+        <div class="animate__animated animate__fadeIn">
+            <div style="background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; margin-bottom: 25px;">
+                    <div style="width: 65px; height: 65px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div style="margin-left: 15px;">
+                        <div style="font-size: 18px; font-weight: 800;">Premium Member</div>
+                        <div style="font-size: 12px; color: #888;">UID: <span id="profile-uid" style="color: var(--primary); font-weight: 700;"></span></div>
+                    </div>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eef2ff;">
+                    <div>
+                        <div style="font-size: 11px; color: #888; font-weight: 700;">WALLET BALANCE</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--dark-text);">₹<span class="live-balance">0.00</span></div>
+                    </div>
+                    <button onclick="handleWithdrawal()" style="background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer;">Withdraw</button>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f0f0f0;">
+                        <span><i class="fas fa-history" style="width: 25px; color: #888;"></i> Transaction History</span>
+                        <i class="fas fa-chevron-right" style="color: #ccc;"></i>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f0f0f0;" onclick="showRefer()">
+                        <span><i class="fas fa-user-plus" style="width: 25px; color: #888;"></i> My Referrals</span>
+                        <i class="fas fa-chevron-right" style="color: #ccc;"></i>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 15px 0; color: #ff4757;">
+                        <span><i class="fas fa-sign-out-alt" style="width: 25px;"></i> Logout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-menu">
+        <div class="menu-item active" onclick="nav('home')"><i class="fas fa-home-alt fa-lg"></i><br>HOME</div>
+        <div class="menu-item" onclick="showRefer()"><i class="fas fa-gift fa-lg"></i><br>REFER</div>
+        <div class="menu-item" onclick="handleWithdrawal()"><i class="fas fa-wallet fa-lg"></i><br>REDEEM</div>
+        <div class="menu-item" onclick="nav('account')"><i class="fas fa-user fa-lg"></i><br>ME</div>
+    </div>
+
+    <script>
+        const signupBonus = Math.floor(Math.random() * (260 - 200 + 1)) + 200;
+        let wallet = 0;
+        let verifiedCount = 0;
+        const randomUID = Math.floor(500000 + Math.random() * 400000);
+
+        const telegramLinks = [
+            "https://t.me/+oU-QbbREjx81NzE1", "https://t.me/+gUoHyk-tLEs4YTY1",
+            "https://t.me/+r72-luRvSXUyOTA9", "https://t.me/+PKqs7oM1XA05M2Vl",
+            "https://t.me/+OTUi0sTq9iE1N2Q9", "https://t.me/+iaoFK0PSK1wxN2Rl",
+            "https://t.me/addlist/536ANdglpSJjYzI1", "https://t.me/+d5m6tT6NzfUxNzNl"
+        ];
+
+        window.onload = () => {
+            document.getElementById('top-uid').innerText = randomUID;
+            document.getElementById('profile-uid').innerText = randomUID;
+            
+            const container = document.getElementById('task-list-container');
+            telegramLinks.forEach((link, i) => {
+                container.innerHTML += `
+                    <div class="task-card animate__animated animate__fadeInUp">
+                        <div class="task-icon"><i class="fab fa-telegram-plane"></i></div>
+                        <div class="task-info">
+                            <h4>Task Channel #${i+1}</h4>
+                            <span style="font-size:10px; color:var(--primary); font-weight:700;">VERIFIED PARTNER</span>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="reward-amt">+₹14</span>
+                            <a href="${link}" target="_blank" class="get-btn" onclick="verifyTask(this)">GET</a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            Swal.fire({
+                title: 'Welcome Reward!',
+                html: `<h2 style="color:var(--success); font-size:45px;">₹${signupBonus}</h2>`,
+                confirmButtonText: 'CLAIM',
+                confirmButtonColor: '#4e73df',
+                allowOutsideClick: false
+            }).then(() => { updateWallet(signupBonus); });
+        };
+
+        function nav(page) {
+            document.getElementById('home-page').style.display = (page === 'home') ? 'block' : 'none';
+            document.getElementById('account-page').style.display = (page === 'account') ? 'block' : 'none';
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function updateWallet(target) {
+            let start = wallet;
+            const diff = target - start;
+            const timer = setInterval(() => {
+                start += diff / 10;
+                if(start >= target) {
+                    clearInterval(timer);
+                    wallet = target;
+                    document.querySelectorAll('.live-balance').forEach(el => el.innerText = wallet.toFixed(2));
+                    document.getElementById('today-earn').innerText = (wallet - signupBonus > 0 ? wallet - signupBonus : 0).toFixed(2);
+                } else {
+                    document.querySelectorAll('.live-balance').forEach(el => el.innerText = start.toFixed(2));
+                }
+            }, 40);
+        }
+
+        function verifyTask(btn) {
+            if(!btn.classList.contains('done')) {
+                btn.innerText = "DONE";
+                btn.classList.add('done');
+                verifiedCount++;
+                document.getElementById('task-count').innerText = verifiedCount;
+                updateWallet(wallet + 14);
+            }
+        }
+
+        function claimDailyReward() {
+            const lastClaim = localStorage.getItem('lastClaimDate');
+            const today = new Date().toDateString();
+            if (lastClaim === today) {
+                Swal.fire('Already Claimed!', 'Kal phir aaiye!', 'info');
+            } else {
+                const dailyAmt = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+                localStorage.setItem('lastClaimDate', today);
+                Swal.fire('Success!', `Aapko mila ₹${dailyAmt}`, 'success').then(() => updateWallet(wallet + dailyAmt));
+            }
+        }
+
+        function handleWithdrawal() {
+            if (verifiedCount < 8) {
+                Swal.fire('Tasks Pending', 'Pehle 8 tasks complete karein!', 'warning');
+            } else if (wallet < 500) {
+                Swal.fire({
+                    title: 'Limit ₹500',
+                    icon: 'error',
+                    html: `<p>Aapke wallet mein ₹${wallet.toFixed(0)} hain.</p><p>Refer karke ₹500 poore karein!</p><b>Per Refer: ₹80</b>`,
+                    confirmButtonText: 'Refer Now'
+                }).then(() => showRefer());
+            } else {
+                Swal.fire({ title: 'Withdraw', input: 'text', inputPlaceholder: 'UPI ID (e.g. user@upi)' });
+            }
+        }
+
+        function showRefer() {
+            const refLink = "https://casinolootprmo.github.io/casinoh/" ;
+            Swal.fire({
+                title: 'Refer & Earn ₹80',
+                html: `<div style="padding:15px; border:1px dashed #4e73df; font-size:12px; margin:15px 0; word-break:break-all;">${refLink}</div>
+                       <button class="withdraw-pill" onclick="copy('${refLink}')">COPY LINK</button>`,
+                showConfirmButton: false
+            });
+        }
+
+        function copy(t) {
+            navigator.clipboard.writeText(t);
+            Swal.fire('Copied!', '', 'success');
+        }
+    </script>
+</body>
+</html>
